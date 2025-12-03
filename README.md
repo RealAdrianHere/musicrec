@@ -386,5 +386,5 @@ Echoes of Mood 是一个基于先进中文嵌入模型BGE-large-zh-v1.5的情绪
 
 ## 14. 联系方式
 
-- **项目地址**：[GitHub Repository](https://github.com/KairosUser/musicrec_noembedding)
+- **项目地址**：[GitHub Repository](https://github.com/KairosUser/musicrec?tab=readme-ov-file)
 - **邮箱**：junerainmoon@126.com
