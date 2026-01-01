@@ -1,390 +1,591 @@
 # Echoes of Mood - 情绪共鸣音乐推荐系统
 
+<div align="center">
+
+![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![Python](https://img.shields.io/badge/python-3.7+-green.svg)
+![Flask](https://img.shields.io/badge/flask-3.1.2-yellow.svg)
+![License](https://img.shields.io/badge/license-MIT-orange.svg)
+
+**基于先进中文嵌入模型的情绪共鸣音乐推荐系统**
+
+[English](./README_EN.md) | 简体中文
+
+</div>
+
 ## 1. 项目概述
 
 ### 1.1 项目名称
-Echoes of Mood - 基于海量歌词数据的情绪计算与智能推荐系统
+**Echoes of Mood** - 基于海量歌词数据的情绪计算与智能推荐系统
 
 ### 1.2 项目简介
 Echoes of Mood 是一个基于先进中文嵌入模型的情绪共鸣音乐推荐系统，能够根据用户输入的文本内容，从10万+中文歌词库中推荐语义匹配度最高的歌曲。系统采用治愈系极简设计，提供沉浸式的用户体验。
 
-### 1.3 项目背景
-在数字化音乐时代，海量曲库与用户个性化情感需求之间存在着巨大的匹配鸿沟。传统的推荐算法往往基于历史行为数据，存在"冷启动"问题，且难以捕捉用户当下细腻、瞬时的心理状态。Echoes of Mood 旨在通过自然语言处理技术，让算法具备"共情能力"，为用户提供具有温度的音乐推荐。
+### 1.3 核心特点
+- 🎵 **智能推荐**：基于BGE大模型，理解用户情绪，精准推荐
+- 🎨 **治愈系设计**：极简主义风格，沉浸式用户体验
+- 🔗 **多平台跳转**：支持网易云音乐、QQ音乐一键跳转播放
+- 📱 **响应式设计**：完美适配桌面、平板、手机设备
+- ⚡ **高性能**：毫秒级推荐响应，流畅体验
+- 🔒 **本地部署**：数据本地化处理，保护隐私
 
-### 1.4 核心特点
-- **先进嵌入模型**：使用BAAI/bge-large-zh-v1.5模型，具备优秀的中文语义理解能力
-- **真实数据**：基于10万+中文歌词的真实数据
-- **语义级推荐**：理解用户文本背后的深层情绪
-- **治愈系设计**：极简主义风格，强调呼吸感与沉浸感
-- **高效响应**：毫秒级推荐响应，提供流畅体验
+### 1.4 更新日志（v2.1.0）
+
+#### 新增功能
+- ✅ **音乐平台跳转功能**：点击推荐结果可直接跳转到网易云音乐或QQ音乐
+- ✅ **平台选择器**：支持在网易云音乐和QQ音乐之间切换
+- ✅ **收藏功能**：可将喜欢的歌曲添加到收藏夹
+- ✅ **历史记录**：自动记录浏览历史
+- ✅ **模块化架构**：前端代码完全模块化，便于维护和扩展
+
+#### 优化改进
+- ✅ 前端JavaScript模块化重构（13个独立模块）
+- ✅ 前端CSS样式模块化（5个独立样式文件）
+- ✅ 响应式设计优化，支持深色模式
+- ✅ 添加调试日志，便于问题排查
+- ✅ 错误处理机制增强
+
+---
 
 ## 2. 技术架构
 
 ### 2.1 整体架构
+
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Echoes of Mood                      │
-├───────────────┬───────────────┬─────────────────────────┤
-│   前端层       │   后端层       │       数据层            │
-├───────────────┼───────────────┼─────────────────────────┤
-│  HTML/CSS     │  Flask        │  原始歌词数据 (JSON)    │
-│  JavaScript   │  Python       │  清洗后的歌词 (CSV)     │
-│  Particles.js │  BGE模型      │  歌词嵌入向量 (NPY)     │
-└───────────────┴───────────────┴─────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                      Echoes of Mood                         │
+├────────────────┬─────────────────┬──────────────────────────┤
+│    前端层       │     后端层      │         数据层           │
+├────────────────┼─────────────────┼──────────────────────────┤
+│ HTML5/CSS3     │ Flask 3.1.2    │ 原始歌词数据 (JSON)       │
+│ JavaScript ES6 │ PyTorch 2.9.1  │ 清洗后的歌词 (CSV)        │
+│ Particles.js   │ BGE Model      │ 歌词嵌入向量 (NPY)        │
+│                │ NumPy 2.2.6    │                          │
+└────────────────┴─────────────────┴──────────────────────────┘
 ```
 
 ### 2.2 技术栈
+
 | 类别 | 技术 | 版本 | 用途 |
 |------|------|------|------|
 | 后端框架 | Flask | 3.1.2 | 搭建API服务 |
 | 数据处理 | Pandas | 2.3.2 | 数据清洗与处理 |
 | 向量化计算 | NumPy | 2.2.6 | 向量存储与计算 |
-| 深度学习框架 | PyTorch | 2.9.1 | 模型加载与推理 |
+| 深度学习 | PyTorch | 2.9.1 | 模型加载与推理 |
 | 预训练模型 | Transformers | 4.57.1 | BGE模型加载 |
-| 前端技术 | HTML5/CSS3/JavaScript | - | 页面设计与交互 |
+| 前端框架 | Vanilla JS | ES6+ | 页面交互逻辑 |
+| 样式方案 | CSS3 Variables | - | 响应式样式系统 |
 | 视觉效果 | Particles.js | 2.0.0 | 动态粒子背景 |
 
-### 2.3 模型选择
+### 2.3 模型配置
+
 | 模型 | 参数 | 大小 | 特点 |
 |------|------|------|------|
-| BGE-large-zh-v1.5 | ~335M | ~1.3GB | 优秀的中文语义理解，适合高精度推荐 |
+| BAAI/bge-large-zh-v1.5 | ~335M | ~1.3GB | 优秀的中文语义理解，1024维向量 |
 
-## 3. 数据处理流程
+---
 
-### 3.1 数据来源
-- **原始数据**：ChineseLyrics 开源数据集
-- **数据规模**：102,197 首中文歌曲
-- **数据格式**：JSON 格式，包含歌名、歌手名、歌词
+## 3. 环境要求
 
-### 3.2 数据清洗流程
-1. **读取数据**：流式读取5个大型JSON文件
-2. **清洗歌词**：
-   - 移除时间戳（如 [00:12.00]）
-   - 移除元数据（作词、作曲、演唱等信息）
-   - 移除曲谱标记（如主歌、副歌等）
-   - 移除多余空行
-3. **过滤短文本**：剔除字数 < 30 的短文本
-4. **去重处理**：合并同一首歌的不同版本
-5. **保存结果**：生成 `clean_lyrics.csv` 文件
+### 3.1 基础要求
+- **操作系统**：Windows 10+ / macOS 10.14+ / Ubuntu 18.04+
+- **Python**：3.7 或更高版本（推荐 3.8-3.11）
+- **内存**：最低 4GB，推荐 8GB+
+- **存储**：预留 5GB+ 空间（模型+数据）
 
-### 3.3 歌词向量化
-1. **加载模型**：加载BGE-large-zh-v1.5模型
-2. **文本处理**：分词、截断、填充
-3. **生成嵌入**：获取最后一层隐藏状态的平均值向量（1024维）
-4. **保存向量**：生成 `lyrics_embeddings.npy` 文件
+### 3.2 硬件要求（可选）
+- **GPU**：NVIDIA GPU（推荐），支持CUDA加速
+- **显存**：4GB+（用于模型推理加速）
 
-## 4. 核心功能模块
+### 3.3 依赖安装
+```bash
+# 克隆项目
+git clone https://github.com/KairosUser/musicrec.git
+cd musicrec
 
-### 4.1 后端服务
-- **API接口**：
-  - 地址：`POST /recommend`
-  - 参数：`text`（用户输入文本）、`top_n`（推荐数量）
-  - 返回：JSON格式的推荐结果，包含歌名、歌手名、相似度
-  
-- **推荐算法**：
-  - 文本向量化：基于BGE模型生成1024维向量
-  - 相似度计算：余弦相似度
-  - 结果排序：返回Top N匹配歌曲
+# 创建虚拟环境（推荐）
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
 
-### 4.2 前端界面
-- **设计风格**：治愈系极简设计
-- **视觉效果**：
-  - 柔和的渐变背景
-  - 动态粒子效果
-  - 流畅的动画过渡
-- **交互功能**：
-  - 多行文本输入
-  - 字符计数
-  - 实时推荐结果展示
-  - 响应式设计，适配不同设备
+# 安装依赖
+pip install -r requirements.txt
+```
 
-### 4.3 数据处理模块
-- **ETL脚本**：`scripts/etl.py`，实现数据清洗流程
-- **向量化脚本**：`scripts/vectorize.py`，生成歌词嵌入向量
-- **数据文件**：
-  - `clean_lyrics.csv`：清洗后的歌词数据
-  - `lyrics_embeddings.npy`：歌词嵌入向量
-  - `song_info.csv`：歌曲信息映射
+---
 
-## 5. 项目结构
+## 4. 安装与启动
+
+### 4.1 快速安装
+
+#### 步骤1：安装依赖
+```bash
+pip install -r requirements.txt
+```
+
+#### 步骤2：数据预处理（首次运行需要）
+```bash
+# 数据清洗
+python scripts/etl.py
+
+# 生成歌词向量（首次会自动下载模型，约1.3GB）
+python scripts/vectorize.py
+```
+
+#### 步骤3：启动服务
+```bash
+python run.py
+```
+
+#### 步骤4：访问应用
+打开浏览器访问：http://127.0.0.1:5000
+
+### 4.2 Docker部署（可选）
+
+```bash
+# 构建镜像
+docker build -t echoes-of-mood .
+
+# 运行容器
+docker run -p 5000:5000 -v $(pwd)/data:/app/data echoes-of-mood
+```
+
+### 4.3 生产环境部署
+
+#### 使用Gunicorn
+```bash
+# 安装gunicorn
+pip install gunicorn
+
+# 启动服务（4个工作进程）
+gunicorn -w 4 -b 0.0.0.0:5000 run:app
+
+# 后台运行
+nohup gunicorn -w 4 -b 0.0.0.0:5000 run:app > app.log 2>&1 &
+```
+
+#### Nginx配置
+```nginx
+server {
+    listen 80;
+    server_name your_domain.com;
+    
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+    
+    # 静态文件缓存
+    location /static/ {
+        alias /path/to/app/static/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+---
+
+## 5. 使用说明
+
+### 5.1 基本使用流程
+
+1. **访问应用**
+   打开浏览器，访问 http://127.0.0.1:5000
+
+2. **输入心情文本**
+   在文本框中输入你的心情或想法，例如：
+   - "今天阳光很好，却感到莫名的孤独"
+   - "失恋的痛苦让我无法呼吸"
+   - "周末的午后，慵懒的时光"
+
+3. **获取推荐**
+   点击"寻找共鸣"按钮或按Enter键
+
+4. **查看结果**
+   系统将返回10首最匹配的歌曲
+
+5. **跳转到音乐平台**
+   - 点击任意推荐结果卡片
+   - 在新标签页打开对应音乐平台的搜索结果
+   - 可直接在目标平台播放歌曲
+
+### 5.2 平台切换功能
+
+在导航栏右侧可以选择目标音乐平台：
+- 🎵 **网易云音乐**（默认）
+- 🎶 **QQ音乐**
+
+切换平台后，所有推荐结果将自动更新跳转链接。
+
+### 5.3 收藏功能
+
+点击推荐结果卡片的❤️按钮可收藏歌曲：
+- 收藏的歌曲会保存到个人中心
+- 收藏状态会在卡片上显示
+- 收藏不会触发跳转
+
+### 5.4 个人中心
+
+访问个人中心可以：
+- 查看已听歌曲数量统计
+- 浏览历史记录
+- 查看收藏的歌曲
+- 管理收藏列表
+
+---
+
+## 6. 功能模块说明
+
+### 6.1 前端架构
+
+#### 目录结构
+```
+app/static/
+├── css/                      # 样式文件
+│   ├── base.css             # CSS变量和基础样式
+│   ├── reset.css            # 样式重置和全局样式
+│   ├── components.css       # 可复用组件样式
+│   ├── layout.css           # 布局样式
+│   └── responsive.css       # 响应式设计
+└── js/                       # JavaScript文件
+    ├── core/                # 核心模块
+    │   ├── config.js        # 配置文件
+    │   ├── constants.js     # 常量定义
+    │   └── utils.js        # 工具函数
+    ├── modules/             # 功能模块
+    │   ├── navigation.js    # 导航模块
+    │   ├── recommendation.js # 推荐模块
+    │   ├── favorites.js     # 收藏模块
+    │   ├── history.js       # 历史记录模块
+    │   ├── categories.js    # 分类模块
+    │   ├── particles.js    # 粒子背景模块
+    │   └── platform-selector.js # 平台选择器
+    ├── ui/                 # UI组件
+    │   ├── notification.js  # 通知组件
+    │   └── loading.js      # 加载组件
+    └── app.js              # 主入口文件
+```
+
+#### 模块职责
+
+| 模块 | 职责 |
+|------|------|
+| config.js | API端点、存储键、限制配置 |
+| constants.js | 通知类型、错误消息、常量定义 |
+| utils.js | 防抖节流、格式化、数据处理 |
+| navigation.js | 导航栏和板块切换 |
+| recommendation.js | 推荐功能和API请求 |
+| favorites.js | 收藏功能管理 |
+| history.js | 历史记录管理 |
+| platform-selector.js | 音乐平台选择和URL生成 |
+| notification.js | 通知提示组件 |
+| loading.js | 加载状态组件 |
+
+### 6.2 后端架构
+
+#### API接口
+
+| 接口 | 方法 | 参数 | 说明 |
+|------|------|------|------|
+| `/recommend` | POST | `{text: string, top_n: int}` | 获取推荐结果 |
+| `/random-recommend` | GET | `top_n: int` | 获取随机推荐 |
+
+#### 响应格式
+
+```json
+{
+    "recommendations": [
+        {
+            "name": "歌曲名",
+            "singer": "歌手名",
+            "similarity": 0.95
+        }
+    ]
+}
+```
+
+---
+
+## 7. 项目结构
 
 ```
-echoes-of-mood/
+musicrec_noembedding/
 ├── app/                      # Flask应用
 │   ├── __init__.py           # 应用初始化
 │   ├── routes.py             # API路由
-│   └── utils.py              # 核心功能模块
-├── data/                     # 数据存储
-│   ├── clean_lyrics.csv      # 清洗后的歌词
-│   └── lyrics_embeddings.npy # 歌词嵌入向量
+│   ├── utils.py              # 核心功能模块
+│   ├── static/               # 静态资源
+│   │   ├── css/              # 样式文件
+│   │   │   ├── base.css
+│   │   │   ├── reset.css
+│   │   │   ├── components.css
+│   │   │   ├── layout.css
+│   │   │   └── responsive.css
+│   │   └── js/               # JavaScript文件
+│   │       ├── core/
+│   │       │   ├── config.js
+│   │       │   ├── constants.js
+│   │       │   └── utils.js
+│   │       ├── modules/
+│   │       │   ├── navigation.js
+│   │       │   ├── recommendation.js
+│   │       │   ├── favorites.js
+│   │       │   ├── history.js
+│   │       │   ├── categories.js
+│   │       │   ├── particles.js
+│   │       │   └── platform-selector.js
+│   │       ├── ui/
+│   │       │   ├── notification.js
+│   │       │   └── loading.js
+│   │       └── app.js
+│   └── templates/            # HTML模板
+│       └── index.html        # 主页面
 ├── lyrics_data/              # 原始歌词数据
-│   ├── lyrics1.json          # 原始歌词文件
+│   ├── lyrics1.json
 │   ├── lyrics2.json
 │   ├── lyrics3.json
 │   ├── lyrics4.json
 │   └── lyrics5.json
-├── models/                   # 模型存储（预留）
+├── models/                   # 模型存储
 ├── scripts/                  # 数据处理脚本
-│   ├── etl.py                # 数据清洗脚本
-│   └── vectorize.py          # 歌词向量化脚本
-├── static/                   # 静态资源
-│   ├── css/
-│   │   └── style.css         # 样式文件
-│   └── js/
-│       └── app.js            # 前端脚本
-├── templates/                # HTML模板
-│   └── index.html            # 主页面
-├── requirements.txt          # 依赖列表
-├── run.py                    # 应用入口
-└── test_albert.py            # 模型测试脚本
+│   ├── etl.py               # 数据清洗脚本
+│   └── vectorize.py         # 歌词向量化脚本
+├── lyrics_data/              # 歌词数据文件
+├── data/                     # 处理后的数据
+├── requirements.txt          # Python依赖
+├── run.py                   # 应用入口
+├── FRONTEND_ARCHITECTURE.md # 前端架构文档
+├── FRONTEND_OPTIMIZATION_SUMMARY.md # 优化总结
+├── QUICK_START.md           # 快速启动指南
+├── MUSIC_PLATFORM_UPDATE.md # 平台跳转功能说明
+├── PLATFORM_SWITCH_FIX_REPORT.md # 平台切换问题修复
+├── CARD_DISPLAY_FIX_REPORT.md # 卡片显示问题修复
+└── README.md                # 本文件
 ```
 
-## 6. 使用说明
+---
 
-### 6.1 环境准备
-1. **安装依赖**：
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 8. 常见问题（FAQ）
 
-2. **运行数据清洗**：
-   ```bash
-   python scripts/etl.py
-   ```
+### Q1: 首次运行模型下载失败？
+**A**: 首次运行会自动从HuggingFace下载模型（约1.3GB）。如果下载失败，可以：
+1. 使用国内镜像：配置环境变量 `HF_ENDPOINT=https://hf-mirror.com`
+2. 手动下载模型文件放到 `models/` 目录
 
-3. **生成歌词向量**：
-   
-   ```bash
-   python scripts/vectorize.py
-   ```
+### Q2: 推荐结果为空？
+**A**: 请检查：
+1. API服务是否正常运行
+2. 数据文件是否完整（`lyrics_embeddings.npy`, `song_info.csv`）
+3. 查看浏览器控制台错误信息
 
-### 6.2 启动服务
+### Q3: 卡片不显示？
+**A**: 请刷新页面（Ctrl+F5）清除缓存。如果问题持续：
+1. 打开浏览器控制台（F12）
+2. 查看是否有JavaScript错误
+3. 检查网络请求是否正常
+
+### Q4: 平台切换不生效？
+**A**: 
+1. 确认已选择正确的平台（按钮应高亮显示）
+2. 点击卡片后会在新标签页打开
+3. 检查浏览器是否阻止弹出窗口
+
+### Q5: 如何修改默认推荐数量？
+**A**: 编辑 `app/static/js/core/config.js`：
+```javascript
+LIMITS: {
+    DEFAULT_RECOMMEND_COUNT: 10  // 修改这里
+}
+```
+
+### Q6: 如何添加新的音乐平台？
+**A**: 在 `app/static/js/core/config.js` 中添加：
+```javascript
+MUSIC_PLATFORMS: {
+    NETEASE: { ... },
+    QQ: { ... },
+    NEW_PLATFORM: {
+        name: '新平台名',
+        icon: '🎵',
+        searchUrl: '搜索URL',
+        color: '#颜色代码'
+    }
+}
+```
+
+### Q7: 如何自定义样式？
+**A**: 编辑 `app/static/css/base.css` 中的CSS变量：
+```css
+:root {
+    --primary-color: #667eea;  /* 修改主色调 */
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+```
+
+### Q8: 支持深色模式吗？
+**A**: 支持！系统会自动检测系统主题，也可以手动在 `app/static/css/responsive.css` 中调整。
+
+### Q9: 如何清理缓存？
+**A**: 
+- 浏览器缓存：Ctrl+Shift+R 或 Ctrl+F5
+- LocalStorage：在浏览器控制台执行 `localStorage.clear()`
+
+### Q10: 支持移动端吗？
+**A**: 支持！系统已优化响应式设计，支持各种屏幕尺寸。
+
+---
+
+## 9. 调试指南
+
+### 9.1 开启调试模式
 ```bash
+# Windows
+set FLASK_DEBUG=1
 python run.py
-```
-服务将运行在 http://127.0.0.1:5000
 
-### 6.3 使用流程
-1. 访问 http://127.0.0.1:5000
-2. 在文本框中输入你的心情（例如："今天阳光很好，却感到莫名的孤独"）
-3. 点击"寻找共鸣"按钮
-4. 查看推荐结果，系统将返回10首最匹配的歌曲
-
-## 7. 部署指南
-
-### 7.1 开发环境部署
-1. 克隆项目代码
-2. 安装依赖
-3. 运行数据清洗脚本
-4. 启动Flask服务
-
-### 7.2 生产环境部署
-1. **使用Gunicorn**：
-   ```bash
-   gunicorn -w 4 -b 0.0.0.0:5000 run:app
-   ```
-
-2. **配置Nginx**：
-   ```nginx
-   server {
-       listen 80;
-       server_name your_domain.com;
-       
-       location / {
-           proxy_pass http://127.0.0.1:5000;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-       }
-   }
-   ```
-
-3. **配置SSL**（可选）：
-   使用Let's Encrypt获取免费SSL证书，配置HTTPS访问
-
-## 8. 核心代码说明
-
-### 8.1 数据清洗核心代码
-```python
-def clean_lyrics(lyric_list):
-    """清洗歌词文本"""
-    lyric_text = '\n'.join(lyric_list)
-    # 移除时间戳
-    lyric_text = re.sub(r'\[\d{2}:\d{2}\.\d{2}\]', '', lyric_text)
-    # 移除元数据
-    lyric_text = re.sub(r'作词[:：]?\s*[^\n]+', '', lyric_text)
-    lyric_text = re.sub(r'作曲[:：]?\s*[^\n]+', '', lyric_text)
-    # 移除多余空行
-    lyric_text = re.sub(r'\n+', '\n', lyric_text).strip()
-    return lyric_text
+# macOS/Linux
+FLASK_DEBUG=1 python run.py
 ```
 
-### 8.2 文本向量化核心代码
-```python
-def get_text_embedding(self, text):
-    """获取文本的BGE嵌入"""
-    inputs = self.tokenizer(
-        text,
-        return_tensors='pt',
-        max_length=512,
-        truncation=True,
-        padding='max_length'
-    )
-    inputs = {k: v.to(self.device) for k, v in inputs.items()}
-    with torch.no_grad():
-        outputs = self.model(**inputs)
-    embedding = outputs.last_hidden_state.mean(dim=1).squeeze().cpu().numpy()
-    return embedding
+### 9.2 查看控制台日志
+打开浏览器开发者工具（F12），切换到"Console"标签，可看到详细的调试信息。
+
+### 9.3 检查网络请求
+切换到"Network"标签，查看API请求和响应数据。
+
+### 9.4 常用调试命令
+```javascript
+// 在浏览器控制台执行
+
+// 查看当前平台
+PlatformSelector.getSelectedPlatform()
+
+// 查看收藏列表
+JSON.parse(localStorage.getItem('favoriteSongs'))
+
+// 查看历史记录
+JSON.parse(localStorage.getItem('musicHistory'))
+
+// 手动刷新卡片
+PlatformSelector.refreshAllCards()
 ```
 
-### 8.3 相似度计算核心代码
-```python
-def cosine_similarity(self, vec1, vec2):
-    """计算余弦相似度"""
-    if len(vec2.shape) == 2:
-        vec1 = vec1.reshape(1, -1)
-        similarity = np.dot(vec1, vec2.T) / (np.linalg.norm(vec1) * np.linalg.norm(vec2, axis=1))
-        return similarity.flatten()
-    else:
-        return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
-```
+---
 
-## 9. 性能与优化
+## 10. 贡献指南
 
-### 9.1 性能指标
-- **响应时间**：< 200ms
-- **模型加载时间**：< 5s
-- **支持并发请求**：100+ QPS
-- **推荐准确率**：依赖于模型训练数据和参数
+### 10.1 提交问题
+遇到问题时，请提供以下信息：
+- 操作系统和浏览器版本
+- 错误信息截图
+- 重现步骤
+- 期望行为
 
-### 9.2 优化方向
-1. **预计算向量**：预先计算所有歌词的嵌入向量，避免实时计算
-2. **使用向量数据库**：集成Faiss或Milvus，加速相似度检索
-3. **模型量化**：考虑使用 INT8 量化进一步减小模型大小和加速推理
-4. **缓存机制**：对频繁查询的文本嵌入进行缓存
-5. **异步处理**：使用Celery处理耗时的向量化任务
+### 10.2 功能建议
+欢迎提交功能建议！请说明：
+- 功能描述
+- 使用场景
+- 实现思路（可选）
 
-## 10. 模型替换说明
+### 10.3 代码贡献
+1. Fork本项目
+2. 创建功能分支：`git checkout -b feature/amazing-feature`
+3. 提交更改：`git commit -m 'Add amazing feature'`
+4. 推送到分支：`git push origin feature/amazing-feature`
+5. 创建Pull Request
 
-### 10.1 替换背景
+### 10.4 代码规范
+- JavaScript遵循ES6+标准
+- CSS使用BEM命名规范
+- 提交前运行代码检查
+- 添加必要的注释
 
-原系统使用 `voidful/albert_chinese_tiny` 模型进行中文文本嵌入，该模型虽然体积较小（约 40MB），但在中文语义理解和文本嵌入质量方面存在一定局限性。为了提升推荐系统的准确性和性能，我们选择了更先进的中文嵌入模型。
+---
 
-### 10.2 新模型选择：BAAI/bge-large-zh-v1.5
+## 11. 性能优化
 
-#### 10.2.1 模型简介
+### 11.1 当前性能指标
+| 指标 | 数值 |
+|------|------|
+| 推荐响应时间 | < 200ms |
+| 模型加载时间 | < 5s |
+| 支持并发 | 100+ QPS |
 
-BAAI/bge-large-zh-v1.5 是由北京人工智能研究院（BAAI）开发的中文文本嵌入模型，基于 Transformer 架构，专门优化了中文语义理解能力。
+### 11.2 优化建议
+1. **使用GPU加速**：BGE模型在GPU上推理更快
+2. **模型量化**：考虑使用INT8量化减小模型体积
+3. **缓存机制**：对频繁查询的文本嵌入进行缓存
+4. **预计算向量**：预先计算所有歌词的嵌入向量
 
-#### 10.2.2 性能优势
+---
 
-| 评估维度 | BGE-large-zh-v1.5 | ALBERT-chinese-tiny | 优势 |
-|---------|-------------------|---------------------|------|
-| 模型大小 | ~1.3GB | ~40MB | 虽然体积更大，但性能提升显著 |
-| 嵌入维度 | 1024 | 312 | 更高的维度意味着更强的语义表达能力 |
-| 中文语义理解 | 优秀 | 一般 | 专门针对中文优化，在中文任务上表现更佳 |
-| MTEB 基准测试 | 领先 | 中等 | 在多项中文嵌入任务中排名靠前 |
-| 推理速度 | 较快 | 很快 | 虽然比 tiny 模型慢，但性价比更高 |
+## 12. 后续规划
 
-#### 10.2.3 技术特点
+### 短期目标
+- [ ] 引入TypeScript
+- [ ] 添加单元测试
+- [ ] 集成代码检查工具（ESLint）
+- [ ] 实现歌曲播放功能
 
-- **基于对比学习训练**：通过对比正负样本学习文本相似性
-- **中文优化**：在大规模中文语料上预训练
-- **支持长文本**：最大支持 512 个 token
-- **与 HuggingFace 生态兼容**：易于集成到现有系统
+### 中期目标
+- [ ] 用户登录系统
+- [ ] 社交分享功能
+- [ ] 歌曲评论功能
+- [ ] 引入状态管理（Redux/Vuex）
 
-### 10.3 实现细节
+### 长期目标
+- [ ] PWA支持（离线访问）
+- [ ] 服务端渲染
+- [ ] 国际化支持
+- [ ] 语音输入
 
-#### 10.3.1 `app/utils.py`
+---
 
-- 将模型导入从 `BertTokenizer, AlbertModel` 改为 `AutoTokenizer, AutoModel`
-- 模型名称从 `voidful/albert_chinese_tiny` 改为 `BAAI/bge-large-zh-v1.5`
-- 嵌入生成方式从使用 [CLS] 位置输出改为使用最后一层隐藏状态的平均值
+## 13. 相关文档
 
-#### 10.3.2 `scripts/vectorize.py`
+- [前端架构文档](./FRONTEND_ARCHITECTURE.md)
+- [优化总结报告](./FRONTEND_OPTIMIZATION_SUMMARY.md)
+- [快速启动指南](./QUICK_START.md)
+- [音乐平台跳转功能说明](./MUSIC_PLATFORM_UPDATE.md)
+- [平台切换问题修复报告](./PLATFORM_SWITCH_FIX_REPORT.md)
+- [卡片显示问题修复报告](./CARD_DISPLAY_FIX_REPORT.md)
 
-- 同样更新了模型导入和模型名称
-- 调整了嵌入生成函数 `get_albert_embedding` 为 `get_bge_embedding`
-- 更新了默认零向量维度从 312 到 1024
-- 调整了嵌入生成方式
+---
 
-#### 10.3.3 嵌入向量变化
+## 14. 参考文献
 
-| 特性 | 原 ALBERT 模型 | 新 BGE 模型 |
-|------|---------------|------------|
-| 嵌入维度 | 312 | 1024 |
-| 生成方式 | [CLS] 位置输出 | 最后一层隐藏状态平均值 |
-| 向量质量 | 中等 | 优秀 |
-| 语义表达能力 | 一般 | 强 |
+1. [BERT: Pre-training of Deep Bidirectional Transformers](https://arxiv.org/abs/1810.04805)
+2. [BGE Model - FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding)
+3. [ChineseLyrics 中文歌词数据库](https://github.com/dengxiuqi/ChineseLyrics)
+4. [MTEB 基准测试](https://huggingface.co/spaces/mteb/leaderboard)
+5. [HuggingFace Transformers](https://huggingface.co/docs/transformers)
+6. [Flask Web开发](https://flask.palletsprojects.com/)
 
-### 10.4 性能预期
+---
 
-#### 10.4.1 推荐准确性提升
+## 15. 许可证
 
-- 由于 BGE 模型在中文语义理解上的优势，推荐结果将更符合用户的真实意图
-- 更高的嵌入维度意味着模型能捕捉更多的语义细节
-- 对比学习训练方式使模型更擅长捕捉文本间的相似关系
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
-#### 10.4.2 资源消耗
+---
 
-| 资源类型 | 预期变化 | 说明 |
-|---------|---------|------|
-| 模型加载时间 | 增加 | 模型体积更大，加载时间会延长 |
-| 推理时间 | 增加 | 模型参数量更多，推理速度会变慢 |
-| 内存占用 | 增加 | 模型和嵌入向量都需要更多内存 |
-| 存储需求 | 增加 | 预生成的嵌入文件大小会增加约 3.3 倍 |
+## 16. 联系方式
 
-#### 10.4.3 优化建议
-
-1. **使用 GPU 加速**：BGE 模型在 GPU 上的推理速度比 CPU 快得多
-2. **批量处理**：对嵌入生成进行批量处理，提高效率
-3. **模型量化**：考虑使用 INT8 量化进一步减小模型大小和加速推理
-4. **缓存机制**：对频繁查询的文本嵌入进行缓存
-
-### 10.5 部署注意事项
-
-1. **模型下载**：首次运行时需要从 HuggingFace 下载模型（约 1.3GB）
-2. **存储空间**：确保服务器有足够的存储空间存放模型和预生成的嵌入文件
-3. **计算资源**：推荐使用至少 4GB RAM 和 NVIDIA GPU（可选，但推荐）
-4. **依赖更新**：确保 transformers 库版本支持 BGE 模型
-
-### 10.6 模型下载链接
-
-- HuggingFace 官方：https://huggingface.co/BAAI/bge-large-zh-v1.5
-- 国内镜像：https://modelscope.cn/models/BAAI/bge-large-zh-v1.5
-
-## 11. 后续发展方向
-
-### 11.1 功能增强
-- **个性化推荐**：基于用户历史行为优化推荐结果
-- **多模态支持**：结合音频特征，提供更精准的推荐
-- **情感分析**：分析用户文本的情感倾向，细化推荐维度
-- **社交功能**：允许用户分享推荐结果，形成社区
-
-### 11.2 技术优化
-- **模型更新**：使用更大规模的预训练模型
-- **微调训练**：在歌词数据集上微调模型，提高推荐准确率
-- **部署优化**：使用Docker容器化部署，简化部署流程
-- **监控系统**：添加日志监控，实时跟踪系统运行状态
-
-## 12. 项目总结
-
-Echoes of Mood 是一个基于先进中文嵌入模型BGE-large-zh-v1.5的情绪共鸣音乐推荐系统，实现了从数据清洗到向量化检索的完整流程。系统采用治愈系极简设计，提供沉浸式的用户体验，能够根据用户输入的文本内容，从10万+中文歌词库中推荐语义匹配度最高的歌曲。
-
-项目的核心价值在于将人工智能技术与人文关怀相结合，让算法具备"共情能力"，为用户提供具有温度的音乐推荐服务。通过使用先进的中文嵌入模型，实现了性能与效果的平衡，为大规模文本推荐系统提供了一种高效的解决方案。
-
-未来，Echoes of Mood 将继续优化模型性能，增强功能模块，探索更多的应用场景，为用户带来更好的音乐推荐体验。
-
-## 13. 参考文献
-
-1. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding
-2. ALBERT: A Lite BERT for Self-supervised Learning of Language Representations
-3. [ChineseLyrics 中文歌词数据库 - GitHub](https://github.com/dengxiuqi/ChineseLyrics)
-4. [BGE 模型官方文档](https://github.com/FlagOpen/FlagEmbedding)
-5. [MTEB 基准测试](https://huggingface.co/spaces/mteb/leaderboard)
-6. Hugging Face Transformers 文档
-7. Flask Web 开发文档
-
-## 14. 联系方式
-
-- **项目地址**：[GitHub Repository](https://github.com/KairosUser/musicrec?tab=readme-ov-file)
+- **项目地址**：https://github.com/KairosUser/musicrec
+- **作者**：Junerainmoon
 - **邮箱**：junerainmoon@126.com
+
+---
+
+<div align="center">
+
+**如果这个项目对你有帮助，请给我们一个⭐️！**
+
+Made with ❤️ by Echoes of Mood Team
+
+</div>

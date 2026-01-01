@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Echoes of Mood - 基于海量歌词数据的情绪计算与智能推荐系统">
+    <meta name="keywords" content="音乐推荐,情绪推荐,歌词推荐,智能推荐">
     <title>Echoes of Mood - 情绪共鸣音乐推荐</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 </head>
 <body>
     <div class="container">
-        <!-- 背景粒子效果 -->
         <div id="particles-js"></div>
         
-        <!-- 导航栏 -->
         <nav class="navbar">
             <div class="navbar-container">
                 <div class="logo-section">
@@ -41,16 +46,13 @@
             </div>
         </nav>
         
-        <!-- 主内容区 -->
         <main class="main-content">
-            <!-- 发现音乐板块 -->
             <section id="discover" class="section active">
                 <h2 class="section-title">发现音乐</h2>
                 <div class="discover-content">
                     <div class="featured-section">
                         <h3 class="section-subtitle">热门推荐</h3>
                         <div class="featured-grid">
-                            <!-- 热门歌曲卡片将通过JavaScript动态插入 -->
                         </div>
                     </div>
                     <div class="categories-section">
@@ -81,7 +83,6 @@
                 </div>
             </section>
             
-            <!-- 情绪推荐板块 -->
             <section id="mood-recommendation" class="section">
                 <h2 class="section-title">情绪推荐</h2>
                 <div class="mood-content">
@@ -94,13 +95,12 @@
                         ></textarea>
                         <div class="input-footer">
                             <span id="char-count" class="char-count">0/500</span>
-                            <button id="submit-btn" class="submit-btn">
+                            <button id="submit-btn" class="btn btn-primary">
                                 <span class="btn-text">寻找共鸣</span>
                             </button>
                         </div>
                     </div>
                     
-                    <!-- 推荐结果区域 -->
                     <div class="results-section">
                         <div id="loading" class="loading hidden">
                             <div class="spinner"></div>
@@ -108,13 +108,11 @@
                         </div>
                         
                         <div id="results" class="results">
-                            <!-- 结果将通过JavaScript动态插入 -->
                         </div>
                     </div>
                 </div>
             </section>
             
-            <!-- 个人中心板块 -->
             <section id="profile" class="section">
                 <h2 class="section-title">个人中心</h2>
                 <div class="profile-content">
@@ -145,13 +143,30 @@
             </section>
         </main>
         
-        <!-- 页脚 -->
         <footer class="footer">
-            <p>基于 BERT 模型的情绪音乐推荐系统</p>
+            <p>基于 BGE 模型的情绪音乐推荐系统</p>
         </footer>
     </div>
     
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="{{ url_for('static', filename='js/core/config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/constants.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/particles.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/platform-selector.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/recommendation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/favorites.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/history.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/categories.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui/notification.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui/loading.js') }}"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            App.init();
+            App.loadFeaturedSongs();
+        });
+    </script>
 </body>
 </html>
