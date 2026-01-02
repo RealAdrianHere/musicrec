@@ -1,12 +1,13 @@
 /* 容器 */
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: var(--spacing-lg);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     position: relative;
+    width: 100%;
 }
 
 /* 粒子背景 */
@@ -24,6 +25,7 @@
 .main-content {
     flex: 1;
     position: relative;
+    width: 100%;
 }
 
 /* 板块样式 */

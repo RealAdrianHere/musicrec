@@ -119,11 +119,25 @@ const Favorites = {
                     <div class="item-singer">${Utils.escapeHtml(item.singer)}</div>
                 </div>
                 <button class="remove-btn" 
-                        onclick="Favorites.remove('${Utils.escapeHtml(item.name)}', '${Utils.escapeHtml(item.singer)}')">
+                        data-song="${Utils.escapeHtml(item.name)}"
+                        data-singer="${Utils.escapeHtml(item.singer)}">
                     取消收藏
                 </button>
             </div>
         `).join('');
+
+        this.bindRemoveEvents();
+    },
+
+    bindRemoveEvents() {
+        const removeBtns = this.favoritesList.querySelectorAll('.remove-btn');
+        removeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const song = btn.getAttribute('data-song');
+                const singer = btn.getAttribute('data-singer');
+                this.remove(song, singer);
+            });
+        });
     },
 
     updateCount() {

@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Echoes of Mood - 基于海量歌词数据的情绪计算与智能推荐系统">
     <meta name="keywords" content="音乐推荐,情绪推荐,歌词推荐,智能推荐">
     <title>Echoes of Mood - 情绪共鸣音乐推荐</title>
@@ -43,6 +44,48 @@
                         </a>
                     </li>
                 </ul>
+                <div class="navbar-actions">
+                    <div class="platform-selector-wrapper">
+                        <button class="platform-toggle" id="platform-toggle" title="选择音乐平台">
+                            <span class="platform-current-icon">🎵</span>
+                            <span class="platform-current-name">网易云音乐</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="platform-dropdown" id="platform-dropdown">
+                            <div class="platform-list">
+                                <button class="platform-option" data-platform="NETEASE" data-name="网易云音乐" data-icon="🎵">
+                                    <span class="option-icon">🎵</span>
+                                    <span class="option-name">网易云音乐</span>
+                                    <span class="option-check">✓</span>
+                                </button>
+                                <button class="platform-option" data-platform="QQ" data-name="QQ音乐" data-icon="🎶">
+                                    <span class="option-icon">🎶</span>
+                                    <span class="option-name">QQ音乐</span>
+                                    <span class="option-check">✓</span>
+                                </button>
+                                <button class="platform-option" data-platform="KUGOU" data-name="酷狗音乐" data-icon="🐕">
+                                    <span class="option-icon">🐕</span>
+                                    <span class="option-name">酷狗音乐</span>
+                                    <span class="option-check">✓</span>
+                                </button>
+                                <button class="platform-option" data-platform="KUWO" data-name="酷我音乐" data-icon="🎸">
+                                    <span class="option-icon">🎸</span>
+                                    <span class="option-name">酷我音乐</span>
+                                    <span class="option-check">✓</span>
+                                </button>
+                                <button class="platform-option" data-platform="APPLE" data-name="Apple Music" data-icon="🍎">
+                                    <span class="option-icon">🍎</span>
+                                    <span class="option-name">Apple Music</span>
+                                    <span class="option-check">✓</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="jump-btn" id="jump-btn" title="跳转到音乐平台">
+                        <span class="jump-icon">🔗</span>
+                        <span class="jump-text">跳转</span>
+                    </button>
+                </div>
             </div>
         </nav>
         

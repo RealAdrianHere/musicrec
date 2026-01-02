@@ -1,11 +1,12 @@
 const PlatformSelector = {
     selectedPlatform: null,
     listeners: [],
+    currentSongInfo: null,
 
     init() {
         this.loadSelectedPlatform();
-        this.createPlatformSelector();
         this.bindEvents();
+        this.updateUI();
     },
 
     loadSelectedPlatform() {
@@ -18,6 +19,7 @@ const PlatformSelector = {
         localStorage.setItem(Config.STORAGE_KEYS.SELECTED_PLATFORM, platform);
         this.selectedPlatform = platform;
         console.log('PlatformSelector - Saved platform:', this.selectedPlatform);
+        this.updateUI();
         this.notifyListeners();
     },
 
@@ -39,107 +41,192 @@ const PlatformSelector = {
         });
     },
 
-    createPlatformSelector() {
-        const navbar = document.querySelector('.navbar-container');
-        if (!navbar) return;
-
-        const selectorContainer = document.createElement('div');
-        selectorContainer.className = 'platform-selector';
-        selectorContainer.innerHTML = `
-            <div class="platform-selector-label">跳转平台</div>
-            <div class="platform-buttons">
-                <button class="platform-btn ${this.selectedPlatform === 'NETEASE' ? 'active' : ''}" 
-                        data-platform="NETEASE" 
-                        title="网易云音乐">
-                    <span class="platform-icon">${Config.MUSIC_PLATFORMS.NETEASE.icon}</span>
-                    <span class="platform-name">${Config.MUSIC_PLATFORMS.NETEASE.name}</span>
-                </button>
-                <button class="platform-btn ${this.selectedPlatform === 'QQ' ? 'active' : ''}" 
-                        data-platform="QQ" 
-                        title="QQ音乐">
-                    <span class="platform-icon">${Config.MUSIC_PLATFORMS.QQ.icon}</span>
-                    <span class="platform-name">${Config.MUSIC_PLATFORMS.QQ.name}</span>
-                </button>
-            </div>
-        `;
-
-        navbar.appendChild(selectorContainer);
-    },
-
-    bindEvents() {
-        const platformBtns = document.querySelectorAll('.platform-btn');
-        platformBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => this.handlePlatformChange(e, btn));
-        });
-    },
-
-    handlePlatformChange(event, btn) {
-        const platform = btn.getAttribute('data-platform');
-        
-        if (platform === this.selectedPlatform) {
-            console.log('PlatformSelector - Platform already selected:', platform);
-            return;
-        }
-
-        console.log('PlatformSelector - Changing platform from', this.selectedPlatform, 'to', platform);
-        this.saveSelectedPlatform(platform);
-        this.updateActiveButton(btn);
-        
-        Notification.show(
-            `已切换到${Config.MUSIC_PLATFORMS[platform].name}`,
-            Constants.NOTIFICATION_TYPES.INFO
-        );
-    },
-
-    updateActiveButton(activeBtn) {
-        const platformBtns = document.querySelectorAll('.platform-btn');
-        platformBtns.forEach(btn => btn.classList.remove('active'));
-        activeBtn.classList.add('active');
-    },
-
     getSelectedPlatform() {
         return this.selectedPlatform;
     },
 
-    getPlatformConfig(platform) {
-        return Config.MUSIC_PLATFORMS[platform] || Config.MUSIC_PLATFORMS[Config.DEFAULT_PLATFORM];
+    getPlatformInfo(platformKey) {
+        return Config.MUSIC_PLATFORMS[platformKey] || null;
     },
 
-    generateSearchUrl(songName, singerName) {
-        const platform = this.getPlatformConfig(this.selectedPlatform);
-        const searchQuery = encodeURIComponent(`${songName} ${singerName}`);
-        const url = `${platform.searchUrl}${searchQuery}`;
-        console.log('PlatformSelector - Generated URL:', url, 'for platform:', this.selectedPlatform);
-        return url;
+    getPlatformConfig(platformKey) {
+        return this.getPlatformInfo(platformKey);
+    },
+
+    setCurrentSongInfo(songName, singer) {
+        this.currentSongInfo = { songName, singer };
+        console.log('PlatformSelector - Set current song:', this.currentSongInfo);
+    },
+
+    getCurrentSongInfo() {
+        return this.currentSongInfo;
+    },
+
+    jumpToPlatform(platformKey = null) {
+        const targetPlatform = platformKey || this.selectedPlatform;
+        const platform = this.getPlatformInfo(targetPlatform);
+        
+        if (!platform) {
+            console.error('PlatformSelector - Platform not found:', targetPlatform);
+            return;
+        }
+
+        if (!this.currentSongInfo) {
+            console.warn('PlatformSelector - No current song info, jumping to platform home');
+            window.open(platform.searchUrl, '_blank');
+            return;
+        }
+
+        const { songName, singer } = this.currentSongInfo;
+        const searchUrl = `${platform.searchUrl}${encodeURIComponent(songName + ' ' + singer)}`;
+        
+        console.log('PlatformSelector - Jumping to:', searchUrl);
+        window.open(searchUrl, '_blank');
+    },
+
+    jumpToAllPlatforms() {
+        if (!this.currentSongInfo) {
+            console.warn('PlatformSelector - No current song info');
+            return;
+        }
+
+        const { songName, singer } = this.currentSongInfo;
+        const platforms = Object.values(Config.MUSIC_PLATFORMS);
+        
+        platforms.forEach((platform, index) => {
+            setTimeout(() => {
+                const searchUrl = `${platform.playerUrl}?search=${encodeURIComponent(songName + ' ' + singer)}`;
+                window.open(searchUrl, '_blank');
+            }, index * 500);
+        });
+    },
+
+    bindEvents() {
+        const platformToggle = document.getElementById('platform-toggle');
+        const platformDropdown = document.getElementById('platform-dropdown');
+        const jumpBtn = document.getElementById('jump-btn');
+        const platformOptions = document.querySelectorAll('.platform-option');
+
+        if (!platformToggle || !platformDropdown) {
+            console.warn('PlatformSelector - Platform selector elements not found');
+            return;
+        }
+
+        platformToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            platformDropdown.classList.toggle('show');
+            platformToggle.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!platformDropdown.contains(e.target) && !platformToggle.contains(e.target)) {
+                platformDropdown.classList.remove('show');
+                platformToggle.classList.remove('active');
+            }
+        });
+
+        platformOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const platformKey = option.dataset.platform;
+                const platformName = option.dataset.name;
+                const platformIcon = option.dataset.icon;
+                
+                this.saveSelectedPlatform(platformKey);
+                
+                platformDropdown.classList.remove('show');
+                platformToggle.classList.remove('active');
+                
+                this.showNotification(`已切换到 ${platformName}`);
+            });
+        });
+
+        if (jumpBtn) {
+            jumpBtn.addEventListener('click', () => {
+                this.jumpToPlatform();
+            });
+        }
+    },
+
+    updateUI() {
+        const platformToggle = document.getElementById('platform-toggle');
+        const platformOptions = document.querySelectorAll('.platform-option');
+        
+        if (!platformToggle) return;
+
+        const platform = this.getPlatformInfo(this.selectedPlatform);
+        if (!platform) return;
+
+        const iconElement = platformToggle.querySelector('.platform-current-icon');
+        const nameElement = platformToggle.querySelector('.platform-current-name');
+        
+        if (iconElement) iconElement.textContent = platform.icon;
+        if (nameElement) nameElement.textContent = platform.name;
+
+        platformOptions.forEach(option => {
+            const platformKey = option.dataset.platform;
+            if (platformKey === this.selectedPlatform) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
+    },
+
+    showNotification(message) {
+        const existingNotification = document.querySelector('.platform-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = 'platform-notification';
+        notification.innerHTML = `
+            <span class="notification-icon">✓</span>
+            <span class="notification-text">${message}</span>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 2000);
     },
 
     refreshAllCards() {
-        const songLinks = document.querySelectorAll('.song-link');
-        console.log('PlatformSelector - Refreshing', songLinks.length, 'cards');
-        
-        songLinks.forEach(link => {
-            const card = link.closest('.result-card');
-            if (!card) return;
-
-            const songTitle = card.querySelector('.song-title');
-            const singerName = card.querySelector('.singer-name');
-            
-            if (songTitle && singerName) {
-                const songName = songTitle.textContent;
-                const singerText = singerName.textContent.replace('🎤 ', '');
-                const newUrl = this.generateSearchUrl(songName, singerText);
-                
-                link.href = newUrl;
-                link.title = `在${Config.MUSIC_PLATFORMS[this.selectedPlatform].name}中搜索：${songName} - ${singerText}`;
-                
-                const platformIndicator = card.querySelector('.platform-indicator');
-                if (platformIndicator) {
-                    const platformConfig = this.getPlatformConfig(this.selectedPlatform);
-                    platformIndicator.innerHTML = `${platformConfig.icon} ${platformConfig.name}`;
-                    platformIndicator.style.color = platformConfig.color;
+        const resultCards = document.querySelectorAll('.result-card');
+        resultCards.forEach(card => {
+            const platformTag = card.querySelector('.platform-tag');
+            if (platformTag) {
+                const platform = this.getPlatformInfo(this.selectedPlatform);
+                if (platform) {
+                    platformTag.textContent = platform.name;
                 }
             }
         });
+    },
+
+    generateSearchUrl(songName, singer) {
+        const platform = this.getPlatformInfo(this.selectedPlatform);
+        if (!platform) {
+            console.error('PlatformSelector - Platform not found:', this.selectedPlatform);
+            return '#';
+        }
+        
+        const searchQuery = encodeURIComponent(songName + ' ' + singer);
+        
+        if (this.selectedPlatform === 'APPLE') {
+            return `${platform.searchUrl}?term=${searchQuery}`;
+        }
+        
+        return `${platform.searchUrl}${searchQuery}`;
     }
 };
 

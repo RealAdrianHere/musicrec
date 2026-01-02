@@ -155,56 +155,52 @@ const Recommendation = {
     createResultCard(song, index, favorites) {
         const similarity = Utils.formatSimilarity(song.similarity);
         const isFavorite = Favorites.isFavorite(song.name, song.singer);
-        const searchUrl = PlatformSelector.generateSearchUrl(song.name, song.singer);
         const platformConfig = PlatformSelector.getPlatformConfig(PlatformSelector.getSelectedPlatform());
         
-        console.log('Recommendation - Creating card for:', song.name, 'URL:', searchUrl, 'Platform:', platformConfig.name);
+        console.log('Recommendation - Creating card for:', song.name, 'Platform:', platformConfig.name);
 
-        const card = document.createElement('a');
-        card.href = searchUrl;
-        card.className = 'result-card clickable song-link';
-        card.target = '_blank';
-        card.rel = 'noopener noreferrer';
-        card.title = `在${platformConfig.name}中搜索：${song.name} - ${song.singer}`;
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.setAttribute('data-song-name', song.name);
+        card.setAttribute('data-singer-name', song.singer);
+        card.setAttribute('data-similarity', song.similarity);
         card.style.animationDelay = `${index * Config.ANIMATION.CARD_DELAY}ms`;
 
         card.innerHTML = `
             <div class="song-name">
                 <span class="song-title">${Utils.escapeHtml(song.name)}</span>
-                <button class="fav-btn ${isFavorite ? 'active' : ''}" 
-                        data-song="${Utils.escapeHtml(song.name)}" 
-                        data-singer="${Utils.escapeHtml(song.singer)}"
-                        title="收藏歌曲">
-                    ❤️
-                </button>
+                <div class="card-actions">
+                    <button class="fav-btn ${isFavorite ? 'active' : ''}" 
+                            data-song="${Utils.escapeHtml(song.name)}" 
+                            data-singer="${Utils.escapeHtml(song.singer)}"
+                            title="收藏歌曲">
+                        ❤️
+                    </button>
+                </div>
             </div>
             <p class="singer-name">🎤 ${Utils.escapeHtml(song.singer)}</p>
             <p class="similarity-score">相似度: ${similarity}%</p>
-            <div class="platform-indicator" style="color: ${platformConfig.color}">
-                ${platformConfig.icon} ${platformConfig.name}
-            </div>
         `;
-
-        card.addEventListener('click', (e) => this.handleCardClick(e, song, searchUrl));
 
         return card;
     },
 
-    handleCardClick(event, song, searchUrl) {
-        if (event.target.classList.contains('fav-btn')) {
-            event.stopPropagation();
-            event.preventDefault();
-            return;
-        }
-
+    handleCardClick(event, song) {
+        event.preventDefault();
+        
         const platform = PlatformSelector.getSelectedPlatform();
         const platformConfig = PlatformSelector.getPlatformConfig(platform);
-        
+        const searchUrl = PlatformSelector.generateSearchUrl(song.name, song.singer);
+
         Notification.show(
             `正在跳转到${platformConfig.name}...`,
             Constants.NOTIFICATION_TYPES.INFO,
             1500
         );
+
+        setTimeout(() => {
+            window.open(searchUrl, '_blank');
+        }, 500);
     },
 
     setLoading(isLoading) {
@@ -266,31 +262,25 @@ const Recommendation = {
 
         featuredGrid.innerHTML = songs.map((song, index) => {
             const isFavorite = Favorites.isFavorite(song.name, song.singer);
-            const searchUrl = PlatformSelector.generateSearchUrl(song.name, song.singer);
-            const platformConfig = PlatformSelector.getPlatformConfig(PlatformSelector.getSelectedPlatform());
             
             return `
-                <a href="${searchUrl}" 
-                   class="result-card clickable song-link" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   style="animation-delay: ${index * Config.ANIMATION.CARD_DELAY}ms"
-                   title="在${platformConfig.name}中搜索：${song.name} - ${song.singer}">
+                <div class="result-card" 
+                     style="animation-delay: ${index * Config.ANIMATION.CARD_DELAY}ms"
+                     data-song-name="${Utils.escapeHtml(song.name)}"
+                     data-singer-name="${Utils.escapeHtml(song.singer)}">
                     <div class="song-name">
                         <span class="song-title">${Utils.escapeHtml(song.name)}</span>
-                        <button class="fav-btn ${isFavorite ? 'active' : ''}" 
-                                data-song="${Utils.escapeHtml(song.name)}" 
-                                data-singer="${Utils.escapeHtml(song.singer)}"
-                                title="收藏歌曲">
-                            ❤️
-                        </button>
+                        <div class="card-actions">
+                            <button class="fav-btn ${isFavorite ? 'active' : ''}" 
+                                    data-song="${Utils.escapeHtml(song.name)}" 
+                                    data-singer="${Utils.escapeHtml(song.singer)}"
+                                    title="收藏歌曲">
+                                ❤️
+                            </button>
+                        </div>
                     </div>
                     <p class="singer-name">🎤 ${Utils.escapeHtml(song.singer)}</p>
-                    <p class="similarity-score">热门推荐</p>
-                    <div class="platform-indicator" style="color: ${platformConfig.color}">
-                        ${platformConfig.icon} ${platformConfig.name}
-                    </div>
-                </a>
+                </div>
             `;
         }).join('');
 
