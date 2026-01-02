@@ -1,4 +1,8 @@
 const Favorites = {
+    currentPage: 1,
+    itemsPerPage: 5,
+    maxItems: 30,
+
     init() {
         this.favoritesList = document.getElementById('favorites-list');
         this.favCountElement = document.getElementById('fav-songs');
@@ -24,6 +28,20 @@ const Favorites = {
             console.error('Error reading favorites:', error);
             return [];
         }
+    },
+
+    getPaginatedItems() {
+        const favorites = this.getAll();
+        const limitedFavorites = favorites.slice(0, this.maxItems);
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        return limitedFavorites.slice(startIndex, endIndex);
+    },
+
+    getTotalPages() {
+        const favorites = this.getAll();
+        const limitedFavorites = favorites.slice(0, this.maxItems);
+        return Math.ceil(limitedFavorites.length / this.itemsPerPage);
     },
 
     save(favorites) {
@@ -56,6 +74,7 @@ const Favorites = {
         });
 
         this.save(favorites);
+        this.currentPage = 1;
         this.render();
         return true;
     },
@@ -95,6 +114,7 @@ const Favorites = {
 
     clear() {
         this.save([]);
+        this.currentPage = 1;
         this.render();
         Notification.show(
             Constants.SUCCESS_MESSAGES.CLEARED_HISTORY,
@@ -102,31 +122,104 @@ const Favorites = {
         );
     },
 
+    goToPage(page) {
+        const totalPages = this.getTotalPages();
+        if (page < 1 || page > totalPages) return;
+        this.currentPage = page;
+        this.render();
+    },
+
+    nextPage() {
+        const totalPages = this.getTotalPages();
+        if (this.currentPage < totalPages) {
+            this.currentPage++;
+            this.render();
+        }
+    },
+
+    prevPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.render();
+        }
+    },
+
     render() {
         if (!this.favoritesList) return;
 
         const favorites = this.getAll();
+        const limitedFavorites = favorites.slice(0, this.maxItems);
 
-        if (favorites.length === 0) {
+        if (limitedFavorites.length === 0) {
             this.favoritesList.innerHTML = `<p class="empty-state">${Constants.EMPTY_STATES.NO_FAVORITES}</p>`;
             return;
         }
 
-        this.favoritesList.innerHTML = favorites.map(item => `
-            <div class="favorite-item">
-                <div class="item-info">
+        const paginatedItems = this.getPaginatedItems();
+        const totalPages = this.getTotalPages();
+
+        let html = `
+            <div class="list-header">
+                <div>歌曲名称</div>
+                <div>歌手</div>
+                <div>收藏时间</div>
+                <div>操作</div>
+            </div>
+        `;
+
+        paginatedItems.forEach(item => {
+            html += `
+                <div class="favorite-item">
                     <div class="item-song">${Utils.escapeHtml(item.name)}</div>
                     <div class="item-singer">${Utils.escapeHtml(item.singer)}</div>
+                    <div class="item-date">${Utils.formatDate(item.addedAt)}</div>
+                    <button class="remove-btn" 
+                            data-song="${Utils.escapeHtml(item.name)}"
+                            data-singer="${Utils.escapeHtml(item.singer)}">
+                        取消收藏
+                    </button>
                 </div>
-                <button class="remove-btn" 
-                        data-song="${Utils.escapeHtml(item.name)}"
-                        data-singer="${Utils.escapeHtml(item.singer)}">
-                    取消收藏
-                </button>
-            </div>
-        `).join('');
+            `;
+        });
 
+        if (totalPages > 1) {
+            html += this.renderPagination(totalPages);
+        }
+
+        this.favoritesList.innerHTML = html;
         this.bindRemoveEvents();
+    },
+
+    renderPagination(totalPages) {
+        let html = '<div class="pagination">';
+        
+        html += `
+            <button class="pagination-btn" ${this.currentPage === 1 ? 'disabled' : ''} onclick="Favorites.prevPage()">
+                上一页
+            </button>
+        `;
+
+        html += '<div class="pagination-pages">';
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+                <button class="pagination-page ${i === this.currentPage ? 'active' : ''}" 
+                        onclick="Favorites.goToPage(${i})">
+                    ${i}
+                </button>
+            `;
+        }
+        html += '</div>';
+
+        html += `
+            <button class="pagination-btn" ${this.currentPage === totalPages ? 'disabled' : ''} onclick="Favorites.nextPage()">
+                下一页
+            </button>
+        `;
+
+        html += `<span class="pagination-info">第 ${this.currentPage} / ${totalPages} 页</span>`;
+        html += '</div>';
+
+        return html;
     },
 
     bindRemoveEvents() {

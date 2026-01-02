@@ -163,15 +163,45 @@
         gap: var(--spacing-sm);
     }
     
+    .list-header {
+        display: none;
+    }
+    
     .history-item,
     .favorite-item {
-        flex-direction: column;
-        gap: var(--spacing-md);
-        align-items: flex-start;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
+    
+    .item-song {
+        font-size: var(--font-size-base);
+        font-weight: 600;
+    }
+    
+    .item-singer {
+        font-size: var(--font-size-sm);
+    }
+    
+    .item-date {
+        text-align: left;
+        font-size: var(--font-size-xs);
     }
     
     .remove-btn {
         align-self: flex-end;
+        width: 100%;
+        margin-top: var(--spacing-sm);
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+    }
+    
+    .pagination-pages {
+        order: -1;
+        width: 100%;
+        justify-content: center;
     }
     
     .notification {
