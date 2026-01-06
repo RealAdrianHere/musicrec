@@ -11,6 +11,47 @@ const Recommendation = {
         
         this.bindEvents();
         this.registerPlatformListener();
+        this.registerFavoritesListener();
+    },
+
+    registerFavoritesListener() {
+        Favorites.addListener((eventType, data) => {
+            this.handleFavoritesChange(eventType, data);
+        });
+    },
+
+    handleFavoritesChange(eventType, data) {
+        if (eventType === 'add' || eventType === 'remove') {
+            this.updateFavoriteButtons(data.songName, data.singerName);
+        }
+    },
+
+    updateFavoriteButtons(songName, singerName) {
+        const allCards = document.querySelectorAll('.result-card[data-song-name][data-singer-name]');
+        allCards.forEach(card => {
+            const cardSongName = card.getAttribute('data-song-name');
+            const cardSingerName = card.getAttribute('data-singer-name');
+            
+            if (cardSongName === songName && cardSingerName === singerName) {
+                const favBtn = card.querySelector('.fav-btn');
+                if (favBtn) {
+                    const isFavorite = Favorites.isFavorite(songName, singerName);
+                    if (isFavorite) {
+                        favBtn.classList.add('active');
+                        const textSpan = favBtn.querySelector('.fav-btn-text');
+                        if (textSpan) {
+                            textSpan.textContent = '已收藏';
+                        }
+                    } else {
+                        favBtn.classList.remove('active');
+                        const textSpan = favBtn.querySelector('.fav-btn-text');
+                        if (textSpan) {
+                            textSpan.textContent = '收藏';
+                        }
+                    }
+                }
+            }
+        });
     },
 
     registerPlatformListener() {
@@ -174,7 +215,7 @@ const Recommendation = {
                             data-song="${Utils.escapeHtml(song.name)}" 
                             data-singer="${Utils.escapeHtml(song.singer)}"
                             title="收藏歌曲">
-                        ❤️
+                        <span class="fav-btn-text">${isFavorite ? '已收藏' : '收藏'}</span>
                     </button>
                 </div>
             </div>
@@ -232,9 +273,10 @@ const Recommendation = {
         }
     },
 
-    async fetchRandomSongs(count = 6) {
+    async fetchRandomSongs(count = 8) {
         try {
-            const response = await fetch(`${Config.ENDPOINTS.RANDOM_RECOMMEND}?top_n=${count}`);
+            const randomParam = Date.now() + Math.random().toString(36).substring(2);
+            const response = await fetch(`${Config.ENDPOINTS.RANDOM_RECOMMEND}?top_n=${count}&_=${randomParam}`);
             const data = await response.json();
 
             if (data.error) {
@@ -275,7 +317,7 @@ const Recommendation = {
                                     data-song="${Utils.escapeHtml(song.name)}" 
                                     data-singer="${Utils.escapeHtml(song.singer)}"
                                     title="收藏歌曲">
-                                ❤️
+                                <span class="fav-btn-text">${isFavorite ? '已收藏' : '收藏'}</span>
                             </button>
                         </div>
                     </div>

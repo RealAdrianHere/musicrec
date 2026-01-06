@@ -61,7 +61,7 @@ const App = {
         Loading.show(featuredGrid, Constants.LOADING_MESSAGES.LOADING_FEATURED);
 
         try {
-            const songs = await Recommendation.fetchRandomSongs(6);
+            const songs = await Recommendation.fetchRandomSongs(8);
             Recommendation.displayRandomSongs(songs);
         } catch (error) {
             console.error('Failed to load featured songs:', error);

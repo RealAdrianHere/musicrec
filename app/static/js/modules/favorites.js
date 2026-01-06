@@ -2,12 +2,37 @@ const Favorites = {
     currentPage: 1,
     itemsPerPage: 5,
     maxItems: 30,
+    listeners: new Set(),
 
     init() {
         this.favoritesList = document.getElementById('favorites-list');
         this.favCountElement = document.getElementById('fav-songs');
         this.bindEvents();
         this.render();
+        this.setupStorageListener();
+    },
+
+    setupStorageListener() {
+        window.addEventListener('storage', (e) => {
+            if (e.key === Config.STORAGE_KEYS.FAVORITE_SONGS) {
+                this.notifyListeners('update');
+            }
+        });
+    },
+
+    addListener(callback) {
+        this.listeners.add(callback);
+        return () => this.listeners.delete(callback);
+    },
+
+    notifyListeners(eventType, data = {}) {
+        this.listeners.forEach(callback => {
+            try {
+                callback(eventType, data);
+            } catch (error) {
+                console.error('Favorites listener error:', error);
+            }
+        });
     },
 
     bindEvents() {
@@ -76,6 +101,7 @@ const Favorites = {
         this.save(favorites);
         this.currentPage = 1;
         this.render();
+        this.notifyListeners('add', { songName, singerName });
         return true;
     },
 
@@ -87,6 +113,7 @@ const Favorites = {
 
         this.save(filtered);
         this.render();
+        this.notifyListeners('remove', { songName, singerName });
         return true;
     },
 
@@ -95,19 +122,29 @@ const Favorites = {
             this.remove(songName, singerName);
             if (btnElement) {
                 btnElement.classList.remove('active');
+                const textSpan = btnElement.querySelector('.fav-btn-text');
+                if (textSpan) {
+                    textSpan.textContent = '收藏';
+                }
             }
             Notification.show(
                 Constants.SUCCESS_MESSAGES.REMOVED_FROM_FAVORITES,
-                Constants.NOTIFICATION_TYPES.INFO
+                Constants.NOTIFICATION_TYPES.INFO,
+                5000
             );
         } else {
             this.add(songName, singerName);
             if (btnElement) {
                 btnElement.classList.add('active');
+                const textSpan = btnElement.querySelector('.fav-btn-text');
+                if (textSpan) {
+                    textSpan.textContent = '已收藏';
+                }
             }
             Notification.show(
                 Constants.SUCCESS_MESSAGES.ADDED_TO_FAVORITES,
-                Constants.NOTIFICATION_TYPES.SUCCESS
+                Constants.NOTIFICATION_TYPES.SUCCESS,
+                5000
             );
         }
     },

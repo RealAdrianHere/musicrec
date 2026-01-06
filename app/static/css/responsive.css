@@ -209,6 +209,17 @@
         right: var(--spacing-md);
         max-width: none;
     }
+    
+    .fav-btn {
+        min-width: auto;
+        padding: 3px 10px;
+        font-size: var(--font-size-lg);
+        border-radius: 0;
+    }
+    
+    .fav-btn-text {
+        font-size: var(--font-size-lg);
+    }
 }
 
 /* 小型移动设备 (480px 及以下) */

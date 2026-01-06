@@ -1,10 +1,35 @@
 const Notification = {
     currentNotification: null,
     timeoutId: null,
+    hideTimeoutId: null,
 
     show(message, type = Constants.NOTIFICATION_TYPES.INFO, duration = Config.NOTIFICATION.DURATION) {
-        this.hide();
+        if (this.currentNotification) {
+            const current = this.currentNotification;
+            this.currentNotification = null;
+            
+            if (this.timeoutId) {
+                clearTimeout(this.timeoutId);
+                this.timeoutId = null;
+            }
 
+            current.style.animation = 'slideOutRight 0.3s ease';
+            
+            setTimeout(() => {
+                if (current.parentNode) {
+                    current.parentNode.removeChild(current);
+                }
+            }, 300);
+
+            setTimeout(() => {
+                this._show(message, type, duration);
+            }, 50);
+        } else {
+            this._show(message, type, duration);
+        }
+    },
+
+    _show(message, type, duration) {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
@@ -18,21 +43,18 @@ const Notification = {
             color: 'white',
             fontWeight: '500',
             zIndex: '10000',
-            animation: 'slideInRight 0.3s ease',
             boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
             maxWidth: '350px',
             wordWrap: 'break-word'
         });
+
+        notification.style.animation = 'slideInRight 0.3s ease';
 
         const bgColor = Constants.NOTIFICATION_COLORS[type] || Constants.NOTIFICATION_COLORS.info;
         notification.style.backgroundColor = bgColor;
 
         document.body.appendChild(notification);
         this.currentNotification = notification;
-
-        if (this.timeoutId) {
-            clearTimeout(this.timeoutId);
-        }
 
         this.timeoutId = setTimeout(() => {
             this.hide();
