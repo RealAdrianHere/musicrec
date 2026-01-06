@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
 </head>
 <body>
     <div class="container">
@@ -164,9 +165,13 @@
                             <span class="avatar-icon">👤</span>
                         </div>
                         <div class="user-details">
-                            <h3 class="username">音乐爱好者</h3>
+                            <h3 class="username" id="username">音乐爱好者</h3>
                             <p class="user-stats">已听歌曲 <span id="total-songs">0</span> · 收藏 <span id="fav-songs">0</span></p>
                         </div>
+                        <button class="edit-profile-btn" id="edit-profile-btn" title="编辑个人资料">
+                            <span>✏️</span>
+                            <span>编辑</span>
+                        </button>
                     </div>
                     
                     <div class="history-section">
@@ -191,6 +196,40 @@
         </footer>
     </div>
     
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑个人资料</h3>
+                <button class="close-btn" id="close-edit-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="avatar-section">
+                    <label>头像</label>
+                    <div class="avatar-upload-area">
+                        <div id="avatar-drop-zone" class="avatar-drop-zone">
+                            <img id="avatar-preview" class="avatar-preview" src="" alt="头像预览">
+                            <div class="avatar-upload-overlay">
+                                <span class="upload-icon">📷</span>
+                                <span class="upload-text">点击或拖拽上传图片</span>
+                                <span class="upload-hint">支持 JPG、PNG、GIF 格式，最大 5MB</span>
+                            </div>
+                        </div>
+                        <input type="file" id="avatar-upload" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+                    </div>
+                </div>
+                <div class="username-section">
+                    <label for="username-input">用户名</label>
+                    <input type="text" id="username-input" placeholder="请输入用户名（1-20个字符）" maxlength="40">
+                    <div id="username-feedback" class="validation-feedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="reset-profile-btn">恢复默认</button>
+                <button class="btn btn-primary" id="save-username" disabled>保存</button>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="{{ url_for('static', filename='js/core/config.js') }}"></script>
     <script src="{{ url_for('static', filename='js/core/constants.js') }}"></script>
@@ -200,6 +239,7 @@
     <script src="{{ url_for('static', filename='js/modules/platform-selector.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modules/recommendation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modules/favorites.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/user.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modules/history.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modules/categories.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ui/notification.js') }}"></script>

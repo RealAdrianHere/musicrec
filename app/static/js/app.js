@@ -18,6 +18,14 @@ const App = {
         if (!localStorage.getItem(Config.STORAGE_KEYS.FAVORITE_SONGS)) {
             localStorage.setItem(Config.STORAGE_KEYS.FAVORITE_SONGS, JSON.stringify([]));
         }
+
+        if (!localStorage.getItem(Config.STORAGE_KEYS.USER_PROFILE)) {
+            localStorage.setItem(Config.STORAGE_KEYS.USER_PROFILE, JSON.stringify({
+                username: '用户1',
+                avatar: null,
+                updatedAt: null
+            }));
+        }
     },
 
     initModules() {
@@ -26,6 +34,7 @@ const App = {
         PlatformSelector.init();
         Recommendation.init();
         Favorites.init();
+        User.init();
         History.init();
         Categories.init();
     },

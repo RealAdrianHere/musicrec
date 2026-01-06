@@ -8,7 +8,8 @@ const Config = {
     STORAGE_KEYS: {
         MUSIC_HISTORY: 'musicHistory',
         FAVORITE_SONGS: 'favoriteSongs',
-        SELECTED_PLATFORM: 'selectedPlatform'
+        SELECTED_PLATFORM: 'selectedPlatform',
+        USER_PROFILE: 'userProfile'
     },
     
     LIMITS: {
@@ -16,7 +17,11 @@ const Config = {
         MAX_HISTORY_ITEMS: 50,
         DEFAULT_RECOMMEND_COUNT: 10,
         MAX_RECOMMEND_COUNT: 50,
-        MIN_RECOMMEND_COUNT: 1
+        MIN_RECOMMEND_COUNT: 1,
+        USERNAME_MIN_LENGTH: 1,
+        USERNAME_MAX_LENGTH: 20,
+        AVATAR_SIZE: 200,
+        AVATAR_QUALITY: 0.9
     },
     
     CACHE: {

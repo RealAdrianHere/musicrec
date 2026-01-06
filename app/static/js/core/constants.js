@@ -65,7 +65,9 @@ const Constants = {
         RECOMMENDATIONS_FOUND: (count) => `找到 ${count} 首匹配的歌曲`,
         ADDED_TO_FAVORITES: '已添加到收藏',
         REMOVED_FROM_FAVORITES: '已取消收藏',
-        CLEARED_HISTORY: '历史记录已清空'
+        CLEARED_HISTORY: '历史记录已清空',
+        USERNAME_UPDATED: '用户名已更新',
+        AVATAR_UPDATED: '头像已更新'
     },
 
     LOADING_MESSAGES: {
